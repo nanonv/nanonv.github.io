@@ -13,14 +13,22 @@ async function message_handler(message) {
     const receiver = message.block.link_as_account
     var amount = raw_to_nano(message.amount)
 
-    if (data.nodes.get(rep) == null) {
-        data.nodes.add({id: rep, label: ''})
-        getRepresentativeAliasAndUpdateNode(rep)
+    if (!data.nodes.get(rep)) {
+        node = {
+            id: rep,
+            font: {
+                color: '#FFFFFF',
+                size: 20
+            }
+        }
+        data.nodes.add(node)
+        getRepresentativeAliasAndUpdateNode(node)
+        getNatriconAndUpdateNode(node)
     }
 
     node = data.nodes.get(sender)
     if (!node) {
-        let node = {
+        node = {
             id: sender,
             size: getSizeFromAmount(amount)
         }
@@ -31,7 +39,7 @@ async function message_handler(message) {
     
     node = data.nodes.get(receiver)
     if (!node) {
-        let node = {
+        node = {
             id: receiver,
             size: getSizeFromAmount(amount)
         }
@@ -103,10 +111,9 @@ function createNetwork() {
     });
 }
 
-async function getRepresentativeAliasAndUpdateNode(rep) {
-    const response = await fetch("https://mynano.ninja/api/accounts/"+rep)
+async function getRepresentativeAliasAndUpdateNode(node) {
+    const response = await fetch("https://mynano.ninja/api/accounts/"+node.id)
     const resp = await response.json()
-    var node = data.nodes.get(rep)
     node.label = resp.alias
     data.nodes.update(node)
 }
