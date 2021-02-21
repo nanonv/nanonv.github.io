@@ -64,7 +64,8 @@ function new_websocket(url, ready_callback, message_callback) {
         console.error(e);
     }
     socket.onmessage = function(response) {
-        if (message_callback !== undefined) message_callback(response);
+        if (message_callback !== undefined && document.getElementById("btn").innerHTML == "Pause") 
+            message_callback(response);
     }
 
     return socket;
@@ -139,6 +140,15 @@ function getSizeFromAmount(amount) {
     if (amount < 25) 
         return 25
     return Math.log10(amount) * 25
+}
+
+function clicked() {
+    btn = document.getElementById("btn")
+    if (btn.innerHTML == "Pause") {
+        btn.innerHTML = "Resume"
+    } else {
+        btn.innerHTML = "Pause"
+    }
 }
 
 subscribe()
