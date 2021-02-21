@@ -21,16 +21,9 @@ async function message_handler(message) {
     if (!data.nodes.get(sender)) {
         let node = {
             id: sender,
-            chosen: {
-                node: function(values, id, selected, hovering) {
-                    console.log(values, id, selected, hovering)
-                    values.size = values.size*1.25;
-                }
-            }
         }
         data.nodes.add(node)
         getNatriconAndUpdateNode(node)
-
     }
     data.edges.add({from: sender, to: rep})
     
@@ -40,7 +33,6 @@ async function message_handler(message) {
         }
         data.nodes.add(node)
         getNatriconAndUpdateNode(node)
-        
     }
     data.edges.add({from: rep, to: receiver})
 }
@@ -56,8 +48,6 @@ function new_websocket(url, ready_callback, message_callback) {
         console.error(e);
     }
     socket.onmessage = function(response) {
-        //console.log('New message from: '+ url);
-        // console.log(response);
         if (message_callback !== undefined) message_callback(response);
     }
 
@@ -85,8 +75,20 @@ function subscribe() {
 function createNetwork() {
     // create a network
     var container = document.getElementById('container');
-    var options = {};
+    var options = {
+        /*interaction: {
+            dragView: false,
+            zoomView: false
+        }*/
+    };
     network = new vis.Network(container, data, options);
+    /*setInterval(function(){ 
+        network.fit({
+            animation: {
+                duration: 0
+            }
+        }) 
+    }, 3000);*/
 }
 
 async function getRepresentativeAliasAndUpdateNode(rep) {
