@@ -11,34 +11,36 @@ async function message_handler(message) {
     const rep = message.block.representative
     const sender = message.account
     const receiver = message.block.link_as_account
-
+    var amount = raw_to_nano(message.amount)
 
     if (data.nodes.get(rep) == null) {
         data.nodes.add({id: rep, label: ''})
         getRepresentativeAliasAndUpdateNode(rep)
     }
 
-    if (!data.nodes.get(sender)) {
+    node = data.nodes.get(sender)
+    if (!node) {
         let node = {
             id: sender,
+            size: getSizeFromAmount(amount)
         }
         data.nodes.add(node)
         getNatriconAndUpdateNode(node)
     }
     data.edges.add({from: sender, to: rep})
     
-    if (!data.nodes.get(message.block.link_as_account)) {
+    node = data.nodes.get(receiver)
+    if (!node) {
         let node = {
-            id: message.block.link_as_account,
+            id: receiver,
+            size: getSizeFromAmount(amount)
         }
         data.nodes.add(node)
         getNatriconAndUpdateNode(node)
     }
-    console.log(message.account, message.amount)
     data.edges.add({
         from: rep,
         to: receiver,
-        width: "0."+message.amount
     })
 }
 
@@ -94,6 +96,11 @@ function createNetwork() {
             }
         }) 
     }, 3000);*/
+
+    network.on("selectNode",function(params) {
+        console.log(params)
+        window.open('https://nanocrawler.cc/explorer/account/'+params.nodes[0], '_blank');
+    });
 }
 
 async function getRepresentativeAliasAndUpdateNode(rep) {
@@ -111,6 +118,19 @@ async function getNatriconAndUpdateNode(node) {
     node.shape = 'image'
     node.image = img
     data.nodes.update(node)
+}
+
+function raw_to_nano(raw) {
+	return NanoCurrency.convert(raw, {
+        from: 'raw',
+        to: 'Nano',
+    });
+}
+
+function getSizeFromAmount(amount) {
+    if (amount < 25) 
+        return 25
+    return Math.log10(amount) * 25
 }
 
 subscribe()
