@@ -97,6 +97,9 @@ function createNetwork() {
             dragView: false,
             zoomView: false
         }*/
+        physics: {
+            timestep: 0.2
+        }
     };
     network = new vis.Network(container, data, options);
     /*setInterval(function(){ 
