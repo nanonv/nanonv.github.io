@@ -10,31 +10,31 @@ async function message_handler(message) {
     
     let rep = message.block.representative
     if (data.nodes.get(rep) == null) {
-        let alias = await getRepresentativeAlias(rep)
-        if (alias) {
-            data.nodes.add({id: rep, label: alias})
-        }
+        data.nodes.add({id: rep, label: ''})
+        getRepresentativeAliasAndUpdateNode(rep)
     }
 
     if (data.nodes.get(message.account) == null) {
-        let natricon = await getNatricon(message.account)
         data.nodes.add({
-            id: message.account, 
-            title: message.account, 
-            shape: 'image',
-            image: natricon,
+            id: message.account,
+            chosen: {
+                node: function(values, id, selected, hovering) {
+                    console.log(values, id, selected, hovering)
+                    values.size = values.size*1.25;
+                }
+            }
         })
+        getNatriconAndUpdateNode(message.block.link_as_account)
+
     }
     data.edges.add({from: message.account, to: rep})
     
     if (data.nodes.get(message.block.link_as_account) == null) {
-        let natricon = await getNatricon(message.block.link_as_account)
         data.nodes.add({
-            id: message.block.link_as_account, 
-            title: message.block.link_as_account, 
-            shape: 'image',
-            image: natricon
+            id: message.block.link_as_account,
         })
+        getNatriconAndUpdateNode(message.block.link_as_account)
+        
     }
     data.edges.add({from: rep, to: message.block.link_as_account})
 }
@@ -83,16 +83,22 @@ function createChart() {
     network = new vis.Network(container, data, options);
 }
 
-async function getRepresentativeAlias(rep) {
+async function getRepresentativeAliasAndUpdateNode(rep) {
     const response = await fetch("https://mynano.ninja/api/accounts/"+rep)
     const resp = await response.json()
-    return resp.alias
+    var node = data.nodes.get(rep)
+    node.label = resp.alias
+    data.nodes.update(node)
 }
 
-async function getNatricon(addr) {
+async function getNatriconAndUpdateNode(addr) {
     const response = await fetch("https://natricon.com/api/v1/nano?address="+addr)
     const resp = await response.text()
-    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(resp)
+    const img = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(resp)
+    var node = data.nodes.get(addr)
+    node.shape = 'image'
+    node.image = img
+    data.nodes.update(node)
 }
 
 subscribe()
