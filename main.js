@@ -17,12 +17,22 @@ async function message_handler(message) {
     }
 
     if (data.nodes.get(message.account) == null) {
-        data.nodes.add({id: message.account, color: 'lime'})
+        let natricon = await getNatricon(message.account)
+        data.nodes.add({
+            id: message.account, 
+            shape: 'image',
+            image: natricon
+        })
     }
     data.edges.add({from: message.account, to: rep})
     
     if (data.nodes.get(message.block.link_as_account) == null) {
-        data.nodes.add({id: message.block.link_as_account, color: 'lime'})
+        let natricon = await getNatricon(message.block.link_as_account)
+        data.nodes.add({
+            id: message.block.link_as_account, 
+            shape: 'image',
+            image: natricon
+        })
     }
     data.edges.add({from: rep, to: message.block.link_as_account})
 }
@@ -75,6 +85,12 @@ async function getRepresentativeAlias(rep) {
     const response = await fetch("https://mynano.ninja/api/accounts/"+rep)
     const resp = await response.json()
     return resp.alias
+}
+
+async function getNatricon(addr) {
+    const response = await fetch("https://natricon.com/api/v1/nano?address="+addr)
+    const resp = await response.text()
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(resp)
 }
 
 subscribe()
