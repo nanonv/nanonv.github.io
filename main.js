@@ -34,7 +34,12 @@ async function message_handler(message) {
         data.nodes.add(node)
         getNatriconAndUpdateNode(node)
     }
-    data.edges.add({from: rep, to: receiver})
+    console.log(message.account, message.amount)
+    data.edges.add({
+        from: rep,
+        to: receiver,
+        width: "0."+message.amount
+    })
 }
 
 function new_websocket(url, ready_callback, message_callback) {
