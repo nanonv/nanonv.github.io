@@ -99,7 +99,7 @@ function createNetwork() {
 
     network.on("selectNode",function(params) {
         console.log(params)
-        window.open('https://nanocrawler.cc/explorer/account/'+params.nodes[0]+'/history', '_blank');
+        window.open('https://mynano.ninja/account/'+params.nodes[0], '_blank');
     });
 }
 
