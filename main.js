@@ -1,42 +1,48 @@
+var network
 var data = {}
 data.nodes = new vis.DataSet()
 data.edges = new vis.DataSet()
-var network
 
 async function message_handler(message) {
     if (!network) {
-        createChart()
+        createNetwork()
     }
     
-    let rep = message.block.representative
+    const rep = message.block.representative
+    const sender = message.account
+    const receiver = message.block.link_as_account
+
+
     if (data.nodes.get(rep) == null) {
         data.nodes.add({id: rep, label: ''})
         getRepresentativeAliasAndUpdateNode(rep)
     }
 
-    if (data.nodes.get(message.account) == null) {
-        data.nodes.add({
-            id: message.account,
+    if (!data.nodes.get(sender)) {
+        let node = {
+            id: sender,
             chosen: {
                 node: function(values, id, selected, hovering) {
                     console.log(values, id, selected, hovering)
                     values.size = values.size*1.25;
                 }
             }
-        })
-        getNatriconAndUpdateNode(message.block.link_as_account)
+        }
+        data.nodes.add(node)
+        getNatriconAndUpdateNode(node)
 
     }
-    data.edges.add({from: message.account, to: rep})
+    data.edges.add({from: sender, to: rep})
     
-    if (data.nodes.get(message.block.link_as_account) == null) {
-        data.nodes.add({
+    if (!data.nodes.get(message.block.link_as_account)) {
+        let node = {
             id: message.block.link_as_account,
-        })
-        getNatriconAndUpdateNode(message.block.link_as_account)
+        }
+        data.nodes.add(node)
+        getNatriconAndUpdateNode(node)
         
     }
-    data.edges.add({from: rep, to: message.block.link_as_account})
+    data.edges.add({from: rep, to: receiver})
 }
 
 function new_websocket(url, ready_callback, message_callback) {
@@ -76,7 +82,7 @@ function subscribe() {
     });
 }
 
-function createChart() {
+function createNetwork() {
     // create a network
     var container = document.getElementById('container');
     var options = {};
@@ -91,11 +97,10 @@ async function getRepresentativeAliasAndUpdateNode(rep) {
     data.nodes.update(node)
 }
 
-async function getNatriconAndUpdateNode(addr) {
-    const response = await fetch("https://natricon.com/api/v1/nano?address="+addr)
+async function getNatriconAndUpdateNode(node) {
+    const response = await fetch("https://natricon.com/api/v1/nano?address="+node.id)
     const resp = await response.text()
     const img = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(resp)
-    var node = data.nodes.get(addr)
     node.shape = 'image'
     node.image = img
     data.nodes.update(node)
