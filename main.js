@@ -16,6 +16,7 @@ async function message_handler(message) {
     if (!data.nodes.get(rep)) {
         node = {
             id: rep,
+            size: 60,
             font: {
                 color: '#FFFFFF',
                 size: 20
