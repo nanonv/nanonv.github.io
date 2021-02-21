@@ -20,8 +20,9 @@ async function message_handler(message) {
         let natricon = await getNatricon(message.account)
         data.nodes.add({
             id: message.account, 
+            title: message.account, 
             shape: 'image',
-            image: natricon
+            image: natricon,
         })
     }
     data.edges.add({from: message.account, to: rep})
@@ -30,6 +31,7 @@ async function message_handler(message) {
         let natricon = await getNatricon(message.block.link_as_account)
         data.nodes.add({
             id: message.block.link_as_account, 
+            title: message.block.link_as_account, 
             shape: 'image',
             image: natricon
         })
