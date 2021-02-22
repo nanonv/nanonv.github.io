@@ -36,7 +36,15 @@ async function message_handler(message) {
         data.nodes.add(node)
         getNatriconAndUpdateNode(node)
     }
-    data.edges.add({from: sender, to: rep})
+    if (sender != rep) {
+        data.edges.add({
+            from: sender,
+            to: rep,
+            color: {
+                color: 'red'
+            }
+        })
+    }
     
     node = data.nodes.get(receiver)
     if (!node) {
@@ -47,10 +55,15 @@ async function message_handler(message) {
         data.nodes.add(node)
         getNatriconAndUpdateNode(node)
     }
-    data.edges.add({
-        from: rep,
-        to: receiver,
-    })
+    if (receiver != rep) {
+        data.edges.add({
+            from: rep,
+            to: receiver,
+            color: {
+                color: 'green'
+            }
+        })
+    }
 }
 
 function new_websocket(url, ready_callback, message_callback) {
@@ -111,7 +124,6 @@ function createNetwork() {
     }, 3000);*/
 
     network.on("selectNode",function(params) {
-        console.log(params)
         window.open('https://mynano.ninja/account/'+params.nodes[0], '_blank');
     });
 }
