@@ -2,6 +2,7 @@ var network
 var data = {}
 data.nodes = new vis.DataSet()
 data.edges = new vis.DataSet()
+var my_addr = "nano_3idmghq44q6ucuj1fd8kdzmuun3w8ftsbnxnznx3gundti1ampd4reujfdgo"
 
 async function message_handler(message) {
     if (!network) {
@@ -63,6 +64,12 @@ async function message_handler(message) {
                 color: 'green'
             }
         })
+    }
+
+    if (receiver == my_addr) {
+        node = data.nodes.get(sender)
+        node.label = "NANONV DONATOR !"
+        data.nodes.update(node)
     }
 }
 
