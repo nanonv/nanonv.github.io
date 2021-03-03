@@ -37,17 +37,36 @@ async function message_handler(message) {
             id: sender,
             size: getSizeFromAmount(amount)
         }
+
+        if (node.id == my_addr) {
+            node.label = "@GmbLucas"
+            node.font = {
+                color: 'lime',
+                size: 18
+            }
+        }
+
         data.nodes.add(node)
         getNatriconAndUpdateNode(node)
     }
     if (sender != rep) {
-        data.edges.add({
-            from: sender,
-            to: rep,
-            color: {
-                color: 'red'
+        var existing = data.edges.get({
+            filter: function (item) {
+              return (item.from == sender && item.to == rep);
             }
-        })
+        });
+
+        if (existing.length == 0) {
+            data.edges.add({
+                from: sender,
+                to: rep,
+                color: {
+                    color: 'red'
+                }
+            })
+        } else {
+            console.log("doublon")
+        }
     }
     
     node = data.nodes.get(receiver)
@@ -60,14 +79,25 @@ async function message_handler(message) {
         getNatriconAndUpdateNode(node)
     }
     if (receiver != rep) {
-        data.edges.add({
-            from: rep,
-            to: receiver,
-            color: {
-                color: 'green'
+        var existing = data.edges.get({
+            filter: function (item) {
+              return (item.from == rep && item.to == receiver);
             }
-        })
+        });
+        if (existing.length == 0) {
+            data.edges.add({
+                from: rep,
+                to: receiver,
+                color: {
+                    color: 'green'
+                }
+            })
+        } else {
+            console.log("doublon")
+        }
     }
+
+
 
     if (receiver == my_addr) {
         node = data.nodes.get(sender)
