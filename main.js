@@ -68,7 +68,11 @@ async function message_handler(message) {
 
     if (receiver == my_addr) {
         node = data.nodes.get(sender)
-        node.label = "NANONV DONATOR !"
+        node.label = "DONATOR !"
+        node.font = {
+            size: 35,
+            color: 'lime'
+        }
         data.nodes.update(node)
     }
 }
@@ -103,33 +107,20 @@ function subscribe() {
         }, function(response) {
         // onmessage
         let data = JSON.parse(response.data);
-        if (data.topic != 'confirmation') return;	// discard ack
+        if (data.topic != 'confirmation') return;
         let message = data.message;
         message_handler(message);
     });
 }
 
 function createNetwork() {
-    // create a network
     var container = document.getElementById('container');
     var options = {
-        /*interaction: {
-            dragView: false,
-            zoomView: false
-        }*/
         physics: {
             timestep: 0.2
         }
     };
     network = new vis.Network(container, data, options);
-    /*setInterval(function(){ 
-        network.fit({
-            animation: {
-                duration: 0
-            }
-        }) 
-    }, 3000);*/
-
     network.on("selectNode",function(params) {
         window.open('https://mynano.ninja/account/'+params.nodes[0], '_blank');
     });
