@@ -2,7 +2,10 @@ var network
 var data = {}
 data.nodes = new vis.DataSet()
 data.edges = new vis.DataSet()
+
 var my_addr = "nano_3idmghq44q6ucuj1fd8kdzmuun3w8ftsbnxnznx3gundti1ampd4reujfdgo"
+var natricon = true
+var repSize = 60
 
 async function message_handler(message) {
     if (!network) {
@@ -17,7 +20,7 @@ async function message_handler(message) {
     if (!data.nodes.get(rep)) {
         node = {
             id: rep,
-            size: 60,
+            size: repSize,
             font: {
                 color: '#FFFFFF',
                 size: 20
@@ -86,9 +89,10 @@ function new_websocket(url, ready_callback, message_callback) {
     socket.onerror = function(e) {
         console.error('WebSocket error');
         console.error(e);
+        setTimeout(() => { subscribe() }, 2000);
     }
     socket.onmessage = function(response) {
-        if (message_callback !== undefined && document.getElementById("btn").innerHTML == "Pause") 
+        if (message_callback !== undefined && document.getElementById("socket").innerHTML == "Pause") 
             message_callback(response);
     }
 
@@ -134,6 +138,8 @@ async function getRepresentativeAliasAndUpdateNode(node) {
 }
 
 async function getNatriconAndUpdateNode(node) {
+    if (!natricon && node.size != repSize) 
+        return
     const response = await fetch("https://natricon.com/api/v1/nano?address="+node.id)
     const resp = await response.text()
     const img = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(resp)
@@ -155,12 +161,23 @@ function getSizeFromAmount(amount) {
     return Math.log10(amount) * 25
 }
 
-function clicked() {
-    btn = document.getElementById("btn")
+function socketToggle() {
+    btn = document.getElementById("socket")
     if (btn.innerHTML == "Pause") {
         btn.innerHTML = "Resume"
     } else {
         btn.innerHTML = "Pause"
+    }
+}
+
+function natriconToggle() {
+    btn = document.getElementById("natricon")
+    if (btn.innerHTML == "Natricon enabled") {
+        btn.innerHTML = "Natricon disabled"
+        natricon = false
+    } else {
+        btn.innerHTML = "Natricon enabled"
+        natricon = true
     }
 }
 
