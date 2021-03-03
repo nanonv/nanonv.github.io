@@ -64,8 +64,6 @@ async function message_handler(message) {
                     color: 'red'
                 }
             })
-        } else {
-            console.log("doublon")
         }
     }
     
@@ -92,12 +90,8 @@ async function message_handler(message) {
                     color: 'green'
                 }
             })
-        } else {
-            console.log("doublon")
         }
     }
-
-
 
     if (receiver == my_addr) {
         node = data.nodes.get(sender)
