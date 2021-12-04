@@ -124,7 +124,7 @@ function new_websocket(url, ready_callback, message_callback) {
 }
 
 function subscribe() {
-    new_websocket('wss://ws.mynano.ninja/', function(socket) {
+    new_websocket('wss://node.somenano.com/repeater', function(socket) {
         // onopen
         let params = {
             action: 'subscribe',
@@ -136,8 +136,9 @@ function subscribe() {
         // onmessage
         let data = JSON.parse(response.data);
         if (data.topic != 'confirmation') return;
-        let message = data.message;
-        message_handler(message);
+        data.blocks.forEach(e => {
+            message_handler(e);
+        });
     });
 }
 
